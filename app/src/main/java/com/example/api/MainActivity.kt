@@ -21,6 +21,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -50,7 +53,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
+//Custom font
+val comfortaa = FontFamily(Font(R.font.comfortaa_regular))
 
 object RetrofitInstance {
     private const val BASE_URL = "https://api.api-ninjas.com"
@@ -106,7 +110,6 @@ class QuoteViewModel: ViewModel() {
     }
 }
 
-
 @Composable
 fun QuotesDisplay(quotes: List<Quote>?, onNewQuoteClicked: () -> Unit) {
     Surface(
@@ -125,19 +128,23 @@ fun QuotesDisplay(quotes: List<Quote>?, onNewQuoteClicked: () -> Unit) {
                     Text(
                         text = "\"${quotes.first().quote}\"",
                         style = MaterialTheme.typography.headlineMedium,
+                        fontFamily = comfortaa,
+                        fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "- ${quotes.first().author}",
                         style = MaterialTheme.typography.bodyLarge,
+                        fontFamily = comfortaa,
                         textAlign = TextAlign.Center
                     )
                     Button(
                         onClick = onNewQuoteClicked,
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
-                        Text("Load New Quote")
+                        Text("Load New Quote",
+                            fontFamily = comfortaa)
                     }
                 }
             } else {
