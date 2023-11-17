@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +40,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,44 +118,59 @@ class QuoteViewModel: ViewModel() {
 
 @Composable
 fun QuotesDisplay(quotes: List<Quote>?, onNewQuoteClicked: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+    val backgroundPainter = painterResource(id = R.drawable.background)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = backgroundPainter,
+            contentDescription = "Background image",
+            contentScale = ContentScale.Crop, // or ContentScale.FillBounds etc. based on your requirement
+            modifier = Modifier.matchParentSize()
+        )
+        // Your column with text and button goes here, as previously defined.
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
+            color = Color.Black.copy(alpha = 0.2f) // Use a transparent color for the Surface
         ) {
-            if (quotes != null && quotes.isNotEmpty()) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "\"${quotes.first().quote}\"",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontFamily = comfortaa,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "- ${quotes.first().author}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontFamily = comfortaa,
-                        textAlign = TextAlign.Center
-                    )
-                    Button(
-                        onClick = onNewQuoteClicked,
-                        modifier = Modifier.padding(top = 16.dp)
+            Surface(
+                modifier = Modifier
+                .padding(16.dp),
+                color = Color.Transparent
+            ) {
+                if (quotes != null && quotes.isNotEmpty()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text("Load New Quote",
-                            fontFamily = comfortaa)
+                        Text(
+                            text = "\"${quotes.first().quote}\"",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color.White,
+                            fontFamily = comfortaa,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "- ${quotes.first().author}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            fontFamily = comfortaa,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = onNewQuoteClicked,
+                            modifier = Modifier.padding(top = 16.dp)
+                        ) {
+                            Text("Load New Quote",
+                                fontFamily = comfortaa)
+                        }
                     }
+                } else {
+                    CircularProgressIndicator()
                 }
-            } else {
-                CircularProgressIndicator()
             }
+
         }
     }
 }

@@ -72,5 +72,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
+//    implementation("com.google.accompanist:accompanist-coil:0.32.0")
 
 }
