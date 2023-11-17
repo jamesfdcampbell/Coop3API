@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,7 +42,9 @@ class MainActivity : ComponentActivity() {
             APITheme {
                 val quoteViewModel: QuoteViewModel = viewModel()
                 val quotes = quoteViewModel.quotes.value
-                QuotesDisplay(quotes = quotes)
+                QuotesDisplay(quotes = quotes) {
+                    quoteViewModel.newQuote()
+                }
             }
         }
     }
@@ -78,7 +82,6 @@ interface QuoteApi {
     suspend fun getRandomQuote(@Query("category") category: String?): List<Quote>
 }
 
-// Simplify the ViewModel by removing the API key parameter
 class QuoteViewModel: ViewModel() {
     private val _quotes = mutableStateOf<List<Quote>?>(null)
     val quotes: State<List<Quote>?> = _quotes
@@ -94,45 +97,52 @@ class QuoteViewModel: ViewModel() {
                 _quotes.value = fetchedQuotes
             } catch (e: Exception) {
                 Log.e("QuoteViewModel", "Error fetching quotes", e)
-                // Handle the error state
             }
         }
+    }
+
+    fun newQuote() {
+        fetchRandomQuote()
     }
 }
 
 
 @Composable
-fun QuotesDisplay(quotes: List<Quote>?) {
+fun QuotesDisplay(quotes: List<Quote>?, onNewQuoteClicked: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        if (quotes != null && quotes.isNotEmpty()) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize().padding(16.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // Iterate over the quotes and display them
-                    quotes.forEach { quote ->
-                        Text(
-                            text = "\"${quote.quote}\"",
-                            style = MaterialTheme.typography.headlineMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "- ${quote.author}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(24.dp)) // Space between each quote
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize().padding(16.dp)
+        ) {
+            if (quotes != null && quotes.isNotEmpty()) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "\"${quotes.first().quote}\"",
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "- ${quotes.first().author}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                    Button(
+                        onClick = onNewQuoteClicked,
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text("Load New Quote")
                     }
                 }
+            } else {
+                CircularProgressIndicator()
             }
-        } else {
-            // Display a loading animation or a placeholder
-            CircularProgressIndicator()
         }
     }
 }
